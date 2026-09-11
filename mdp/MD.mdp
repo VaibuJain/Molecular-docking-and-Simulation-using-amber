@@ -1,0 +1,58 @@
+;==============================================================================
+; Protein-Ligand Complex PRODUCTION MD - 100 ns (PERFECT)
+;==============================================================================
+title                   = Protein-ligand production MD 100ns
+
+; Core (GOOD)
+integrator              = md
+nsteps                  = 50000000           ; 100 ns
+dt                      = 0.002
+
+; Output (GOOD)
+nstenergy               = 5000
+nstlog                  = 5000
+nstxout-compressed      = 5000
+
+; Bonds & constraints (FIXED)
+continuation            = yes
+constraint_algorithm    = lincs
+constraints             = all-bonds          ; **FIXED**
+lincs_iter              = 4                  ; **CRITICAL FIX**
+lincs_order             = 4
+
+; Neighbor searching (GOOD)
+cutoff-scheme           = Verlet
+nstlist                 = 20
+rlist                   = 1.2
+
+; Non-bonded (GOOD)
+vdwtype                 = cutoff
+vdw-modifier            = force-switch
+rvdw-switch             = 1.0
+rvdw                    = 1.2
+coulombtype             = PME
+rcoulomb                = 1.2
+pme_order               = 4
+fourierspacing          = 0.16
+
+; Temperature coupling (MATCH NPT)
+tcoupl                  = V-rescale
+tc-grps                 = Protein_LIG Water_and_ions  ; **MATCH NPT**
+tau_t                   = 0.1  1.0
+ref_t                   = 300  300
+nsttemp                 = 0.1
+
+; Pressure coupling (STABLE)
+pcoupl                  = C-rescale          ; **FIXED: more stable**
+pcoupltype              = isotropic
+tau_p                   = 2.0
+ref_p                   = 1.0
+compressibility         = 4.5e-5
+refcoord_scaling        = com
+
+; PBC & corrections (FIXED)
+pbc                     = xyz
+DispCorr                = EnerPres           ; **FIXED**
+
+; Continue
+gen_vel                 = no

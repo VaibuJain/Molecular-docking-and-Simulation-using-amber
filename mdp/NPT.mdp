@@ -1,0 +1,60 @@
+;==============================================================================
+; Protein-Ligand Complex NPT Equilibration - 5 ns (STABLE)
+;==============================================================================
+title                   = Protein-ligand NPT equilibration 5ns
+
+; Position restraints
+define                  = -DPOSRES
+
+; Core parameters
+integrator              = md
+nsteps                  = 2500000        ; 5 ns
+dt                      = 0.002          ; 2 fs (OK after stable NVT)
+
+; Output
+nstenergy               = 5000
+nstlog                  = 5000
+nstxout-compressed      = 5000
+
+; Bonds & constraints (CRITICAL FIX)
+continuation            = yes
+constraint_algorithm    = lincs
+constraints             = all-bonds
+lincs_iter              = 4              ; **FIXED: was 2**
+lincs_order             = 4
+
+; Non-bonded (CORRECTED)
+cutoff-scheme           = Verlet
+ns_type                 = grid
+nstlist                 = 20             ; **FIXED: was 200**
+rlist                   = 1.2
+
+; VdW & Electrostatics (good)
+vdwtype                 = cutoff
+vdw-modifier            = force-switch
+rvdw-switch             = 1.0
+rvdw                    = 1.2
+coulombtype             = PME
+rcoulomb                = 1.2
+pme_order               = 4
+fourierspacing          = 0.16
+
+; Temperature coupling (FIXED)
+tcoupl                  = V-rescale
+tc-grps                 = Protein_LIG Water_and_ions
+tau_t                   = 0.1  1.0       ; **FIXED: water needs 1.0ps**
+ref_t                   = 300  300        
+nsttemp                 = 0.1      
+
+; Pressure coupling (GOOD)
+pcoupl                  = C-rescale
+pcoupltype              = isotropic
+tau_p                   = 2.0
+ref_p                   = 1.0
+compressibility         = 4.5e-5
+refcoord_scaling        = com
+
+; PBC
+pbc                     = xyz
+DispCorr                = EnerPres
+gen_vel                 = no

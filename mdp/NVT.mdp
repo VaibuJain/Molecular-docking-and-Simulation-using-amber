@@ -1,0 +1,54 @@
+;==============================================================================
+; NVT Equilibration Phase 1 - 160K atoms (0.5 ns STABLE)
+;==============================================================================
+title                   = NVT_safe_160K_atoms_phase1
+
+; CRITICAL SAFETY SETTINGS
+define                  = -DPOSRES
+integrator              = md
+dt                      = 0.001              ; 1 fs (safe start!)
+nsteps                  = 500000             ; 0.5 ns
+
+; Output control
+nstxout-compressed      = 5000               ; every 5 ps
+nstenergy               = 500                ; every 0.5 ps (monitor closely)
+nstlog                  = 500
+
+; LINCS (CRITICAL for stability)
+constraint_algorithm    = lincs
+constraints             = h-bonds
+lincs_iter              = 4                  ; SAFE for large system
+lincs_order             = 4
+
+; Neighbor searching
+cutoff-scheme           = Verlet
+ns_type                 = grid
+nstlist                 = 10                 ; tighter
+rlist                   = 1.2
+
+; Non-bonded
+vdwtype                 = cutoff
+vdw-modifier            = force-switch
+rvdw-switch             = 1.0
+rvdw                    = 1.2
+coulombtype             = PME
+rcoulomb                = 1.2
+pme_order               = 4
+fourierspacing          = 0.16
+
+; Temperature coupling (gentle)
+tcoupl                  = V-rescale
+tc-grps                 = Protein_LIG Water_and_ions
+tau_t                   = 0.1  1.0           ; Protein tight, water gentle
+ref_t                   = 300  300
+nsttemp                 = 0.1
+
+; PBC
+pbc                     = xyz
+DispCorr                = EnerPres
+
+; Velocities
+gen_vel                 = yes
+gen_temp                = 300
+gen_seed                = -1
+continuation            = no

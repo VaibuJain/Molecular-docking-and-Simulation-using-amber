@@ -1,0 +1,26 @@
+;==============================================================================
+; Energy Minimization - 160K atoms (PROPER)
+;==============================================================================
+title           = Proper Minimization 160K atoms
+
+; CRITICAL: Much stricter tolerance
+integrator      = steep
+emtol           = 1000.0      ; **100x stricter than your 10.0**
+emstep          = 0.01
+nsteps          = 100000      ; More steps
+
+; Non-bonded (same as yours ✓)
+nstlist         = 1
+cutoff-scheme   = Verlet
+ns_type         = grid
+rlist           = 1.2
+coulombtype     = PME
+rcoulomb        = 1.2
+vdwtype         = cutoff
+vdw-modifier    = force-switch
+rvdw-switch     = 1.0
+rvdw            = 1.2
+pbc             = xyz
+DispCorr        = EnerPres    ; **FIXED: was 'no'**
+
+nstenergy       = 100         ; More frequent monitoring
